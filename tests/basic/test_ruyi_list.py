@@ -34,6 +34,7 @@ def test_ruyi_list(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
     })
 
     ruyi_init_default_telemetry(ruyi_exe, isolated_env)
+    install_pkg = "wlink"
 
     # ruyi list --name-contains ""
     child = spawn_ruyi(
@@ -98,10 +99,10 @@ def test_ruyi_list(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
 
     assert child.exitstatus == 0
 
-    # ruyi list --name-contains 'gnu-milkv-milkv-duo-bin' --is-installed y
+    # ruyi list --name-contains install_pkg --is-installed y
     child = spawn_ruyi(
         ruyi_exe,
-        ["list", "--name-contains", "gnu-milkv-milkv-duo-bin", "--is-installed", "y"],
+        ["list", "--name-contains", install_pkg, "--is-installed", "y"],
         env=isolated_env,
     )
     try:
@@ -114,28 +115,28 @@ def test_ruyi_list(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
 
     assert child.exitstatus == 0
 
-    # ruyi list --name-contains 'gnu-milkv-milkv-duo-bin' --is-installed n
+    # ruyi list --name-contains install_pkg --is-installed n
     child = spawn_ruyi(
         ruyi_exe,
-        ["list", "--name-contains", "gnu-milkv-milkv-duo-bin", "--is-installed", "n"],
+        ["list", "--name-contains", install_pkg, "--is-installed", "n"],
         env=isolated_env,
     )
     try:
         child.expect_exact(_("List of available packages:"))
-        child.expect_exact("toolchain/gnu-milkv-milkv-duo-bin")
+        child.expect_exact(f"toolchain/{install_pkg}")
         child.expect(pexpect.EOF)
     finally:
         child.close()
 
     assert child.exitstatus == 0
 
-    # ruyi install gnu-milkv-milkv-duo-bin
-    ruyi_install(ruyi_exe, ["gnu-milkv-milkv-duo-bin"], env=isolated_env)
+    # ruyi install install_pkg
+    ruyi_install(ruyi_exe, [install_pkg], env=isolated_env)
 
-    # ruyi list --name-contains 'gnu-milkv-milkv-duo-bin' --is-installed y
+    # ruyi list --name-contains install_pkg --is-installed y
     child = spawn_ruyi(
         ruyi_exe,
-        ["list", "--name-contains", "gnu-milkv-milkv-duo-bin", "--is-installed", "y"],
+        ["list", "--name-contains", install_pkg, "--is-installed", "y"],
         env=isolated_env,
     )
     try:
@@ -147,17 +148,17 @@ def test_ruyi_list(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
 
     assert child.exitstatus == 0
 
-    # ruyi list --name-contains 'gnu-milkv-milkv-duo-bin' --is-installed n
+    # ruyi list --name-contains install_pkg --is-installed n
     child = spawn_ruyi(
         ruyi_exe,
-        ["list", "--name-contains", "gnu-milkv-milkv-duo-bin", "--is-installed", "n"],
+        ["list", "--name-contains", install_pkg, "--is-installed", "n"],
         env=isolated_env,
     )
     try:
         child.expect_exact(_("List of available packages:"))
         child.expect(pexpect.EOF)
         after = child.before
-        assert "toolchain/gnu-milkv-milkv-duo-bin" not in after
+        assert f"toolchain/{install_pkg}" not in after
     finally:
         child.close()
 
