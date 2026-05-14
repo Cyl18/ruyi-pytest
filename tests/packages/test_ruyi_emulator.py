@@ -224,8 +224,9 @@ def test_box64(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str], tmp_
     ruyi_init_default_telemetry(ruyi_exe, isolated_env)
     ruyi_install(ruyi_exe, ["box64-upstream"], env=isolated_env)
 
+    host_arch = platform.machine()
     box64_bins = list(
-        (Path(isolated_env["XDG_DATA_HOME"]) / "ruyi" / "binaries" / "riscv64").glob("box64-upstream-*/bin/box64")
+        (Path(isolated_env["XDG_DATA_HOME"]) / "ruyi" / "binaries" / host_arch).glob("box64-upstream-*/bin/box64")
     )
     assert box64_bins, "box64 binary not found"
     assert len(box64_bins) == 1

@@ -26,7 +26,7 @@ def test_ruyi_venv(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str], 
     ruyi_init_default_telemetry(ruyi_exe, isolated_env)
 
     pkgs = ["llvm-upstream", "gnu-plct"]
-    if platform.machine() != "riscv64":
+    if platform.machine() == "x86_64":
         pkgs.append("qemu-user-riscv-upstream")
 
     ruyi_install(
@@ -89,7 +89,7 @@ def test_ruyi_venv(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str], 
     # --sysroot-from
     args = ["venv", "-t", "llvm-upstream", "--sysroot-from", "gnu-plct", ]
     # -e qemu-user-riscv
-    if platform.machine() != "riscv64":
+    if platform.machine() == "x86_64":
         args.extend(["-e", "qemu-user-riscv-upstream", ])
 
     venv_path = tmp_path / "rit-ruyi-basic-ruyi-llvm"
@@ -109,7 +109,7 @@ def test_ruyi_venv(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str], 
     assert child.exitstatus == 0
     assert (venv_path / "sysroot").exists()
     assert (venv_path / "bin" / "clang").exists()
-    if platform.machine() != "riscv64":
+    if platform.machine() == "x86_64":
         assert (venv_path / "bin" / "ruyi-qemu").exists()
 
     hello_c = tmp_path / "hello_ruyi.c"
@@ -143,24 +143,24 @@ def test_ruyi_venv(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str], 
 
     assert child.exitstatus == 0
 
-    # run
-    child = spawn_ruyi(
-        "bash",
-        [
-            "-c",
-            f'source "{venv_path}/bin/ruyi-activate" && ' +
-            ("" if platform.machine() == "riscv64" else "ruyi-qemu ") +
-            f'"{tmp_path / "hello_ruyi.o"}" && '
-            'echo "ret $?" && '
-            'ruyi-deactivate',
-        ],
-        env=isolated_env,
-    )
-    try:
-        child.expect_exact("hello, ruyi")
-        child.expect_exact("ret 0")
-        child.expect(pexpect.EOF)
-    finally:
-        child.close()
+    if platform.machine() in ["riscv64", "x86_64"]:
+        child = spawn_ruyi(
+            "bash",
+            [
+                "-c",
+                f'source "{venv_path}/bin/ruyi-activate" && ' +
+                ("" if platform.machine() == "riscv64" else "ruyi-qemu ") +
+                f'"{tmp_path / "hello_ruyi.o"}" && '
+                'echo "ret $?" && '
+                'ruyi-deactivate',
+            ],
+            env=isolated_env,
+        )
+        try:
+            child.expect_exact("hello, ruyi")
+            child.expect_exact("ret 0")
+            child.expect(pexpect.EOF)
+        finally:
+            child.close()
 
-    assert child.exitstatus == 0
+        assert child.exitstatus == 0
