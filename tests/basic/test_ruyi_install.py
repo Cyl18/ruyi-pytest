@@ -2,12 +2,28 @@
 import hashlib
 import pexpect
 import time
+import urllib.error
 import urllib.request
 
 from pathlib import Path
 from typing import Dict
 
 from tests.helpers import bind_gettext, ruyi_init_default_telemetry, spawn_ruyi
+
+
+def retry_urlretrieve(url: str, dest: Path, attempts: int = 3):
+    last_error = None
+
+    for attempt in range(1, attempts + 1):
+        try:
+            return urllib.request.urlretrieve(url, dest)
+        except (OSError, urllib.error.ContentTooShortError) as e:
+            last_error = e
+            dest.unlink(missing_ok=True)
+            if attempt < attempts:
+                time.sleep(60)
+                continue
+            raise last_error
 
 
 def test_ruyi_install(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
@@ -233,7 +249,7 @@ def test_ruyi_install_host(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str
     distfiles_dir = Path(isolated_env["XDG_CACHE_HOME"]) / "ruyi" / "distfiles"
     distfiles_dir.mkdir(parents=True, exist_ok=True)
     dest = distfiles_dir / file
-    urllib.request.urlretrieve(url, dest)
+    retry_urlretrieve(url, dest)
 
     child = spawn_ruyi(
         ruyi_exe,
