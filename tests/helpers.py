@@ -28,15 +28,16 @@ def spawn_ruyi(
         cwd: Union[str, None] = None,
         logfile_read: Union[TextIO, None] = None,
 ) -> pexpect.spawn:
-    return pexpect.spawn(
+    child = pexpect.spawn(
         ruyi_bin,
         args,
         env=env, # type: ignore[arg-type]
         encoding="utf-8",
         timeout=timeout,
         cwd=cwd,
-        logfile_read=logfile_read,
     )
+    child.logfile_read = logfile_read
+    return child
 
 
 def bind_gettext(env: Dict[str, str], catalog: Dict[str, Dict[str, str]]) -> Callable[[str], str]:
