@@ -1,6 +1,7 @@
 
 import pexpect
 import sys
+import time
 
 from pathlib import Path
 from typing import Callable, Dict, List, TextIO, Union
@@ -99,17 +100,30 @@ def ruyi_init_default_telemetry(ruyi_bin: str, env: Dict[str, str]):
 
 def ruyi_install(ruyi_bin: str, pkgs: List[str], env: Dict[str, str]):
     capture = _CaptureLog()
-    child = spawn_ruyi(
-        ruyi_bin,
-        ["install", *pkgs],
-        env=env,
-        timeout=10*60,
-        logfile_read=sys.stdout if env.get("RUYI_LOG_INSTALL") else capture,
-    )
+    max_attempts = 3
+    last_timeout: Union[pexpect.TIMEOUT, None] = None
 
-    try:
-        child.expect(pexpect.EOF)
-    finally:
-        child.close()
+    for attempt in range(1, max_attempts + 1):
+        child = spawn_ruyi(
+            ruyi_bin,
+            ["install", *pkgs],
+            env=env,
+            timeout=10*60,
+            logfile_read=sys.stdout if env.get("RUYI_LOG_INSTALL") else capture,
+        )
 
-    assert child.exitstatus == 0, capture.dump()
+        try:
+            child.expect(pexpect.EOF)
+        except pexpect.TIMEOUT as e:
+            last_timeout = e
+            child.close(force=True)
+            if attempt < max_attempts:
+                capture.write(f"\nruyi install timed out; retrying after 60s ({attempt + 1} of {max_attempts})\n")
+                time.sleep(60)
+                continue
+            raise AssertionError(capture.dump()) from last_timeout
+        finally:
+            child.close()
+
+        assert child.exitstatus == 0, capture.dump()
+        return
