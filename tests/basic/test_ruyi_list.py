@@ -35,6 +35,7 @@ def test_ruyi_list(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
 
     ruyi_init_default_telemetry(ruyi_exe, isolated_env)
     install_pkg = "wlink"
+    install_pkg_full_name = "board-util/wlink"
 
     # ruyi list --name-contains ""
     child = spawn_ruyi(
@@ -123,7 +124,7 @@ def test_ruyi_list(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
     )
     try:
         child.expect_exact(_("List of available packages:"))
-        child.expect_exact(f"toolchain/{install_pkg}")
+        child.expect_exact(install_pkg_full_name)
         child.expect(pexpect.EOF)
     finally:
         child.close()
@@ -158,7 +159,7 @@ def test_ruyi_list(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
         child.expect_exact(_("List of available packages:"))
         child.expect(pexpect.EOF)
         after = child.before
-        assert f"toolchain/{install_pkg}" not in after
+        assert install_pkg_full_name not in after
     finally:
         child.close()
 

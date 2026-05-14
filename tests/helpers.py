@@ -24,7 +24,7 @@ def spawn_ruyi(
         ruyi_bin: str,
         args: List[str],
         env: Dict[str, str],
-        timeout: int = 5,
+        timeout: int = 60,
         cwd: Union[str, None] = None,
         logfile_read: Union[TextIO, None] = None,
 ) -> pexpect.spawn:
