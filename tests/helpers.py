@@ -1,8 +1,23 @@
 
 import pexpect
+import sys
 
 from pathlib import Path
-from typing import Callable, Dict, List, Union
+from typing import Callable, Dict, List, TextIO, Union
+
+
+class _CaptureLog:
+    def __init__(self):
+        self.parts: List[str] = []
+
+    def write(self, data: str) -> None:
+        self.parts.append(data)
+
+    def flush(self) -> None:
+        pass
+
+    def dump(self) -> str:
+        return "".join(self.parts)
 
 
 def spawn_ruyi(
@@ -10,7 +25,8 @@ def spawn_ruyi(
         args: List[str],
         env: Dict[str, str],
         timeout: int = 5,
-        cwd: Union[str, None] = None
+        cwd: Union[str, None] = None,
+        logfile_read: Union[TextIO, None] = None,
 ) -> pexpect.spawn:
     return pexpect.spawn(
         ruyi_bin,
@@ -19,6 +35,7 @@ def spawn_ruyi(
         encoding="utf-8",
         timeout=timeout,
         cwd=cwd,
+        logfile_read=logfile_read,
     )
 
 
@@ -80,11 +97,13 @@ def ruyi_init_default_telemetry(ruyi_bin: str, env: Dict[str, str]):
 
 
 def ruyi_install(ruyi_bin: str, pkgs: List[str], env: Dict[str, str]):
+    capture = _CaptureLog()
     child = spawn_ruyi(
         ruyi_bin,
         ["install", *pkgs],
         env=env,
-        timeout=10*60
+        timeout=10*60,
+        logfile_read=sys.stdout if env.get("RUYI_LOG_INSTALL") else capture,
     )
 
     try:
@@ -92,4 +111,4 @@ def ruyi_install(ruyi_bin: str, pkgs: List[str], env: Dict[str, str]):
     finally:
         child.close()
 
-    assert child.exitstatus == 0
+    assert child.exitstatus == 0, capture.dump()
