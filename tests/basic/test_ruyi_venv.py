@@ -42,6 +42,7 @@ def test_ruyi_venv(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str], 
         ruyi_exe,
         ["venv", "--toolchain", "gnu-plct", "generic", str(venv_path)],
         env=isolated_env,
+        timeout=30,
     )
     try:
         child.expect(_(r"info: Creating a Ruyi virtual environment at .*"))
@@ -97,6 +98,7 @@ def test_ruyi_venv(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str], 
         ruyi_exe,
         [*args, "generic", str(venv_path)],
         env=isolated_env,
+        timeout=30,
     )
     try:
         child.expect(_(r"info: Creating a Ruyi virtual environment at .*"))

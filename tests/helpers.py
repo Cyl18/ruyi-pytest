@@ -1,8 +1,23 @@
 
 import pexpect
+import time
 
 from pathlib import Path
-from typing import Callable, Dict, List, Union
+from typing import Callable, Dict, List, TextIO, Union
+
+
+class _CaptureLog:
+    def __init__(self):
+        self.parts: List[str] = []
+
+    def write(self, data: str) -> None:
+        self.parts.append(data)
+
+    def flush(self) -> None:
+        pass
+
+    def dump(self) -> str:
+        return "".join(self.parts)
 
 
 def spawn_ruyi(
@@ -10,9 +25,10 @@ def spawn_ruyi(
         args: List[str],
         env: Dict[str, str],
         timeout: int = 5,
-        cwd: Union[str, None] = None
+        cwd: Union[str, None] = None,
+        logfile_read: Union[TextIO, None] = None,
 ) -> pexpect.spawn:
-    return pexpect.spawn(
+    child = pexpect.spawn(
         ruyi_bin,
         args,
         env=env, # type: ignore[arg-type]
@@ -20,6 +36,8 @@ def spawn_ruyi(
         timeout=timeout,
         cwd=cwd,
     )
+    child.logfile_read = logfile_read
+    return child
 
 
 def bind_gettext(env: Dict[str, str], catalog: Dict[str, Dict[str, str]]) -> Callable[[str], str]:
@@ -80,16 +98,31 @@ def ruyi_init_default_telemetry(ruyi_bin: str, env: Dict[str, str]):
 
 
 def ruyi_install(ruyi_bin: str, pkgs: List[str], env: Dict[str, str]):
-    child = spawn_ruyi(
-        ruyi_bin,
-        ["install", *pkgs],
-        env=env,
-        timeout=10*60
-    )
+    capture = _CaptureLog()
+    max_attempts = 3
+    last_timeout: Union[pexpect.TIMEOUT, None] = None
 
-    try:
-        child.expect(pexpect.EOF)
-    finally:
-        child.close()
+    for attempt in range(1, max_attempts + 1):
+        child = spawn_ruyi(
+            ruyi_bin,
+            ["install", *pkgs],
+            env=env,
+            timeout=10*60,
+            logfile_read=capture,
+        )
 
-    assert child.exitstatus == 0
+        try:
+            child.expect(pexpect.EOF)
+        except pexpect.TIMEOUT as e:
+            last_timeout = e
+            child.close(force=True)
+            if attempt < max_attempts:
+                capture.write(f"\nruyi install timed out; retrying after 30s ({attempt + 1} of {max_attempts})\n")
+                time.sleep(30)
+                continue
+            raise AssertionError(capture.dump()) from last_timeout
+        finally:
+            child.close()
+
+        assert child.exitstatus == 0, capture.dump()
+        return
