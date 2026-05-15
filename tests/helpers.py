@@ -25,7 +25,7 @@ def spawn_ruyi(
         ruyi_bin: str,
         args: List[str],
         env: Dict[str, str],
-        timeout: int = 60,
+        timeout: int = 15,
         cwd: Union[str, None] = None,
         logfile_read: Union[TextIO, None] = None,
 ) -> pexpect.spawn:
@@ -82,7 +82,7 @@ def ruyi_init_default_telemetry(ruyi_bin: str, env: Dict[str, str]):
         ruyi_bin,
         ["update"],
         env=myenv,
-        timeout=60
+        timeout=30
     )
 
     try:
@@ -108,7 +108,7 @@ def ruyi_install(ruyi_bin: str, pkgs: List[str], env: Dict[str, str]):
             ruyi_bin,
             ["install", *pkgs],
             env=env,
-            timeout=10*60,
+            timeout=30,
             logfile_read=sys.stdout if env.get("RUYI_LOG_INSTALL") else capture,
         )
 
@@ -118,8 +118,8 @@ def ruyi_install(ruyi_bin: str, pkgs: List[str], env: Dict[str, str]):
             last_timeout = e
             child.close(force=True)
             if attempt < max_attempts:
-                capture.write(f"\nruyi install timed out; retrying after 60s ({attempt + 1} of {max_attempts})\n")
-                time.sleep(60)
+                capture.write(f"\nruyi install timed out; retrying after 30s ({attempt + 1} of {max_attempts})\n")
+                time.sleep(30)
                 continue
             raise AssertionError(capture.dump()) from last_timeout
         finally:
