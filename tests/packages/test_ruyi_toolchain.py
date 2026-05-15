@@ -23,7 +23,7 @@ def test_ruyi_toolchain_xthead(ruyi_exe: str, ruyi_build_dep: bool, isolated_env
         ruyi_exe,
         [*cmd, "sipeed-lpi4a", str(venv_path)],
         env=isolated_env,
-        timeout=10 * 60,
+        timeout=30,
     )
     try:
         child.expect(pexpect.EOF)
@@ -38,7 +38,6 @@ def test_ruyi_toolchain_xthead(ruyi_exe: str, ruyi_build_dep: bool, isolated_env
         ruyi_exe,
         ["extract", "--extract-without-subdir", "coremark(1.0.1)", ],
         env=isolated_env,
-        timeout=10 * 60,
         cwd=str(source_path),
     )
     try:
@@ -61,7 +60,7 @@ ruyi-deactivate
 ''',
         ],
         env=isolated_env,
-        timeout=60,
+        timeout=30,
         cwd=str(source_path),
     )
     try:
@@ -87,7 +86,6 @@ ruyi-deactivate
     ''',
             ],
             env=isolated_env,
-            timeout=600,
             cwd=str(source_path),
         )
         try:

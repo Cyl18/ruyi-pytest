@@ -21,7 +21,7 @@ def retry_urlretrieve(url: str, dest: Path, attempts: int = 3):
             last_error = e
             dest.unlink(missing_ok=True)
             if attempt < attempts:
-                time.sleep(60)
+                time.sleep(30)
                 continue
             raise last_error
 
@@ -54,7 +54,7 @@ def test_ruyi_install(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str
         ruyi_exe,
         ["install", "gnu-upstream"],
         env=failed_env,
-        timeout=10 * 60,
+        timeout=30,
     )
     try:
         child.expect(_(r"info: downloading .*"))
@@ -77,7 +77,7 @@ def test_ruyi_install(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str
         ruyi_exe,
         ["install", "gnu-upstream"],
         env=isolated_env,
-        timeout=10 * 60,
+        timeout=30,
     )
     try:
         child.expect(_(r"info: downloading .*"))
@@ -113,7 +113,7 @@ def test_ruyi_install(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str
         ruyi_exe,
         ["install", "name:gnu-upstream"],
         env=isolated_env,
-        timeout=10 * 60,
+        timeout=30,
     )
     try:
         child.expect_exact(_("info: skipping already installed package"))
@@ -128,7 +128,7 @@ def test_ruyi_install(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str
         ruyi_exe,
         ["install", f"gnu-upstream({installed_ver})"],
         env=isolated_env,
-        timeout=10 * 60,
+        timeout=30,
     )
     try:
         child.expect_exact(_("info: skipping already installed package"))
@@ -143,7 +143,7 @@ def test_ruyi_install(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str
         ruyi_exe,
         ["install", f"gnu-upstream(=={installed_ver})"],
         env=isolated_env,
-        timeout=10 * 60,
+        timeout=30,
     )
     try:
         child.expect_exact(_("info: skipping already installed package"))
@@ -158,7 +158,7 @@ def test_ruyi_install(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str
         ruyi_exe,
         ["install", f"gnu-upstream(>{installed_ver})"],
         env=isolated_env,
-        timeout=10 * 60,
+        timeout=30,
     )
     try:
         child.expect_exact(_("fatal error: atom gnu-upstream(>") + installed_ver +
@@ -255,7 +255,7 @@ def test_ruyi_install_host(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str
         ruyi_exe,
         ["install", "--host", "x86_64", "extra/wps-office"],
         env=isolated_env,
-        timeout=10 * 60,
+        timeout=30,
     )
     try:
         child.expect(_(r"info: extracting wps-office_\S+_amd64\.deb for package wps-office-\S+"))

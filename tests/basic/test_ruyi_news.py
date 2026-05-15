@@ -27,7 +27,7 @@ def test_ruyi_news(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
         ruyi_exe,
         ["update"],
         env=isolated_env,
-        timeout=60,
+        timeout=30,
     )
     try:
         child.expect_exact(_(" new news item(s):"))

@@ -35,7 +35,7 @@ def test_ruyi_install_and_extract(ruyi_exe: str, ruyi_dep: bool, isolated_env: D
         ruyi_exe,
         ["extract", "--extract-without-subdir", "ruyisdk-demo"],
         env=isolated_env,
-        timeout=10 * 60,
+        timeout=30,
         cwd=str(test_path),
     )
     try:
@@ -58,7 +58,7 @@ def test_ruyi_install_and_extract(ruyi_exe: str, ruyi_dep: bool, isolated_env: D
         ruyi_exe,
         ["extract", "ruyisdk-demo"],
         env=isolated_env,
-        timeout=10 * 60,
+        timeout=30,
         cwd=str(test_path),
     )
     try:
@@ -83,7 +83,7 @@ def test_ruyi_install_and_extract(ruyi_exe: str, ruyi_dep: bool, isolated_env: D
         ruyi_exe,
         ["extract", "coremark(1.0.1)"],
         env=isolated_env,
-        timeout=10 * 60,
+        timeout=30,
         cwd=str(test_path),
     )
     try:
