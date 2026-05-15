@@ -1,5 +1,6 @@
 import platform
 import pexpect
+import pytest
 
 from pathlib import Path
 from typing import Dict
@@ -22,6 +23,7 @@ def test_ruyi_toolchain_xthead(ruyi_exe: str, ruyi_build_dep: bool, isolated_env
         ruyi_exe,
         [*cmd, "sipeed-lpi4a", str(venv_path)],
         env=isolated_env,
+        timeout=10 * 60,
     )
     try:
         child.expect(pexpect.EOF)
@@ -102,6 +104,9 @@ ruyi-deactivate
 
 
 def test_ruyi_toolchain_gnu_milkv(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str], tmp_path: Path):
+    if platform.machine() != "x86_64":
+        pytest.skip("gnu-milkv-milkv-duo-* packages only provide linux/x86_64 binaries")
+
     ruyi_init_default_telemetry(ruyi_exe, isolated_env)
     ruyi_install(
         ruyi_exe,
