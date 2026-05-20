@@ -8,7 +8,7 @@ from typing import Dict
 from tests.helpers import bind_gettext, ruyi_init_default_telemetry, ruyi_install, spawn_ruyi
 
 
-def test_ruyi_toolchain_xthead(ruyi_exe: str, ruyi_build_dep: bool, isolated_env: Dict[str, str], tmp_path: Path):
+def test_ruyi_toolchain_gnu_plct_xthead(ruyi_exe: str, ruyi_build_dep: bool, isolated_env: Dict[str, str], tmp_path: Path):
     pkgs = ["gnu-plct-xthead", ]
     cmd = ["venv", "-t", "gnu-plct-xthead", ]
     if platform.machine() == "x86_64":

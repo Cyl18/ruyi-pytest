@@ -68,3 +68,7 @@ def test_ruyi_output_completion_script(ruyi_exe: str, isolated_env: Dict[str, st
         child.close()
 
     assert child.exitstatus == 1
+
+
+def test_ruyi_completion_issue452(ruyi_exe: str, isolated_env: Dict[str, str]):
+    pass
