@@ -98,10 +98,10 @@ def test_ruyi_list(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
 
     assert child.exitstatus == 0
 
-    # ruyi list --name-contains 'gnu-milkv-milkv-duo-bin' --is-installed y
+    # ruyi list --name-contains 'gnu-plct-xthead' --is-installed y
     child = spawn_ruyi(
         ruyi_exe,
-        ["list", "--name-contains", "gnu-milkv-milkv-duo-bin", "--is-installed", "y"],
+        ["list", "--name-contains", "gnu-plct-xthead", "--is-installed", "y"],
         env=isolated_env,
     )
     try:
@@ -114,28 +114,28 @@ def test_ruyi_list(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
 
     assert child.exitstatus == 0
 
-    # ruyi list --name-contains 'gnu-milkv-milkv-duo-bin' --is-installed n
+    # ruyi list --name-contains 'gnu-plct-xthead' --is-installed n
     child = spawn_ruyi(
         ruyi_exe,
-        ["list", "--name-contains", "gnu-milkv-milkv-duo-bin", "--is-installed", "n"],
+        ["list", "--name-contains", "gnu-plct-xthead", "--is-installed", "n"],
         env=isolated_env,
     )
     try:
         child.expect_exact(_("List of available packages:"))
-        child.expect_exact("toolchain/gnu-milkv-milkv-duo-bin")
+        child.expect_exact("toolchain/gnu-plct-xthead")
         child.expect(pexpect.EOF)
     finally:
         child.close()
 
     assert child.exitstatus == 0
 
-    # ruyi install gnu-milkv-milkv-duo-bin
-    ruyi_install(ruyi_exe, ["gnu-milkv-milkv-duo-bin"], env=isolated_env)
+    # ruyi install gnu-plct-xthead
+    ruyi_install(ruyi_exe, ["gnu-plct-xthead"], env=isolated_env)
 
-    # ruyi list --name-contains 'gnu-milkv-milkv-duo-bin' --is-installed y
+    # ruyi list --name-contains 'gnu-plct-xthead' --is-installed y
     child = spawn_ruyi(
         ruyi_exe,
-        ["list", "--name-contains", "gnu-milkv-milkv-duo-bin", "--is-installed", "y"],
+        ["list", "--name-contains", "gnu-plct-xthead", "--is-installed", "y"],
         env=isolated_env,
     )
     try:
@@ -147,17 +147,17 @@ def test_ruyi_list(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
 
     assert child.exitstatus == 0
 
-    # ruyi list --name-contains 'gnu-milkv-milkv-duo-bin' --is-installed n
+    # ruyi list --name-contains 'gnu-plct-xthead' --is-installed n
     child = spawn_ruyi(
         ruyi_exe,
-        ["list", "--name-contains", "gnu-milkv-milkv-duo-bin", "--is-installed", "n"],
+        ["list", "--name-contains", "gnu-plct-xthead", "--is-installed", "n"],
         env=isolated_env,
     )
     try:
         child.expect_exact(_("List of available packages:"))
         child.expect(pexpect.EOF)
         after = child.before
-        assert "toolchain/gnu-milkv-milkv-duo-bin" not in after
+        assert "toolchain/gnu-plct-xthead" not in after
     finally:
         child.close()
 
@@ -210,7 +210,6 @@ def test_ruyi_list(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
     assert child.exitstatus == 0
 
 
-@pytest.mark.skipif(platform.machine() != "x86_64", reason="x86_64 only")
 def test_ruyi_list_unavailable_pkg(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
     _ = bind_gettext(isolated_env, {
         "zh_CN.UTF-8": {
@@ -222,10 +221,15 @@ def test_ruyi_list_unavailable_pkg(ruyi_exe: str, ruyi_dep: bool, isolated_env: 
 
     ruyi_init_default_telemetry(ruyi_exe, isolated_env)
 
-    # ruyi list --name-contains box64
+    if platform.machine() == "x86_64":
+        pkg = "box64"
+    else:
+        pkg = "wps-office"
+
+    # ruyi list --name-contains pkg
     child = spawn_ruyi(
         ruyi_exe,
-        ["list", "--name-contains", "box64"],
+        ["list", "--name-contains", pkg],
         env=isolated_env,
     )
     try:
