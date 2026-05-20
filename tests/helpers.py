@@ -9,7 +9,7 @@ def spawn_ruyi(
         ruyi_bin: str,
         args: List[str],
         env: Dict[str, str],
-        timeout: int = 5,
+        timeout: int = 10,
         cwd: Union[str, None] = None
 ) -> pexpect.spawn:
     return pexpect.spawn(
