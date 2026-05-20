@@ -101,6 +101,7 @@ ruyi-deactivate
             child.close()
 
 
+@pytest.mark.skipif(platform.machine() != "x86_64", reason="x86_64 only")
 def test_ruyi_toolchain_gnu_milkv(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str], tmp_path: Path):
     ruyi_init_default_telemetry(ruyi_exe, isolated_env)
     ruyi_install(
