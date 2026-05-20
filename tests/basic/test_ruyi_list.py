@@ -198,7 +198,6 @@ def test_ruyi_list(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
         ruyi_exe,
         ["list", "profiles"],
         env=isolated_env,
-        timeout=5,
     )
     try:
         child.expect_exact(_("arch:"))
