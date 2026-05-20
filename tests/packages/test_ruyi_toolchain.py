@@ -1,5 +1,6 @@
 import platform
 import pexpect
+import pytest
 
 from pathlib import Path
 from typing import Dict
