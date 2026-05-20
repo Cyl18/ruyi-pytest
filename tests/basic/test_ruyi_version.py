@@ -1,11 +1,9 @@
 
 import pexpect
-import pytest
-import shutil
 
 from typing import Dict
 
-from tests.helpers import bind_gettext, ruyi_init_default_telemetry, spawn_ruyi
+from tests.helpers import bind_gettext, spawn_ruyi
 
 
 def test_ruyi_version(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str]):
@@ -18,6 +16,8 @@ def test_ruyi_version(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str
             "License: Apache-2.0": "许可证：Apache-2.0",
         },
     })
+
+    # See: https://github.com/ruyisdk/ruyi/issues/454
 
     child = spawn_ruyi(
         ruyi_exe,

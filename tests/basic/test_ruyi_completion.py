@@ -13,6 +13,8 @@ def test_ruyi_output_completion_script(ruyi_exe: str, isolated_env: Dict[str, st
         },
     })
 
+    # See: https://github.com/ruyisdk/ruyi/issues/452
+
     child = spawn_ruyi(
         ruyi_exe,
         ["--output-completion-script"],

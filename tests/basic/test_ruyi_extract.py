@@ -7,7 +7,7 @@ from typing import Dict
 from tests.helpers import bind_gettext, ruyi_init_default_telemetry, spawn_ruyi
 
 
-def test_ruyi_install_and_extract(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str], tmp_path: Path,):
+def test_ruyi_extract(ruyi_exe: str, ruyi_dep: bool, isolated_env: Dict[str, str], tmp_path: Path,):
     _ = bind_gettext(isolated_env, {
         "zh_CN.UTF-8": {
             r"info: extracting ruyisdk-demo-\S+ for package ruyisdk-demo-\S+":
