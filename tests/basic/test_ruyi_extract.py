@@ -12,8 +12,8 @@ def test_ruyi_install_and_extract(ruyi_exe: str, ruyi_dep: bool, isolated_env: D
         "zh_CN.UTF-8": {
             r"info: extracting ruyisdk-demo-\S+ for package ruyisdk-demo-\S+":
                 r"信息：正在为软件包 ruyisdk-demo-\S+ 解压缩 ruyisdk-demo-\S+",
-            r"info: package ruyisdk-demo-\S+ has been extracted to None":
-                r"信息：软件包 ruyisdk-demo-\S+ 已被解压缩到 None",
+            r"info: package ruyisdk-demo-\S+ has been extracted to .":
+                r"信息：软件包 ruyisdk-demo-\S+ 已被解压缩到 .",
             r"info: package ruyisdk-demo-\S+ has been extracted to (ruyisdk-demo-\S+)":
                 r"信息：软件包 ruyisdk-demo-\S+ 已被解压缩到 (ruyisdk-demo-\S+)",
             "info: extracting coremark-1.01.tar.gz for package coremark-1.0.1":
@@ -41,7 +41,7 @@ def test_ruyi_install_and_extract(ruyi_exe: str, ruyi_dep: bool, isolated_env: D
     try:
         child.expect(_(r"info: extracting ruyisdk-demo-\S+ for package ruyisdk-demo-\S+"))
         # TODO: we should open a new issue
-        child.expect(_(r"info: package ruyisdk-demo-\S+ has been extracted to None"))
+        child.expect(_(r"info: package ruyisdk-demo-\S+ has been extracted to ."))
         child.expect(pexpect.EOF)
     finally:
         child.close()
