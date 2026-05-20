@@ -13,9 +13,6 @@ def test_ruyi_output_completion_script(ruyi_exe: str, isolated_env: Dict[str, st
         },
     })
 
-    # TODO:
-    ruyi_init_default_telemetry(ruyi_exe, isolated_env)
-
     child = spawn_ruyi(
         ruyi_exe,
         ["--output-completion-script"],
