@@ -1,4 +1,6 @@
 import pexpect
+import io
+import shlex
 
 from typing import Dict
 
@@ -71,4 +73,36 @@ def test_ruyi_output_completion_script(ruyi_exe: str, isolated_env: Dict[str, st
 
 
 def test_ruyi_completion_issue452(ruyi_exe: str, isolated_env: Dict[str, str]):
-    pass
+    shell_env = isolated_env.copy()
+    shell_env["PS1"] = "$ "
+
+    output = io.StringIO()
+    child = spawn_ruyi(
+        "bash",
+        ["--noprofile", "--norc", "-i"],
+        env=shell_env,
+    )
+    child.logfile_read = output
+
+    try:
+        child.expect_exact("$ ")
+        child.sendline(f'eval "$({shlex.quote(ruyi_exe)} --output-completion-script=bash)"')
+        child.expect_exact("$ ")
+        child.send("ruyi --ver")
+        child.send("\t")
+        child.expect_exact("ruyi --version")
+        child.sendline("")
+        child.expect_exact("Ruyi")
+        child.expect_exact("$ ")
+        child.sendline("exit")
+        child.expect(pexpect.EOF)
+    finally:
+        child.close()
+
+    assert child.exitstatus == 0
+
+    completion_output = output.getvalue()
+    assert "bash:" not in completion_output
+    assert "Counting objects" not in completion_output
+    assert "cloning from" not in completion_output
+    assert "package repository does not exist" not in completion_output
